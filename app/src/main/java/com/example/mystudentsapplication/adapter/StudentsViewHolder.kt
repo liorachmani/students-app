@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mystudentsapplication.OnItemClickListener
 import com.example.mystudentsapplication.model.Student
 import com.example.mystudentsapplication.R
+import com.example.mystudentsapplication.model.Model
 
 class StudentsViewHolder(itemView: View, listener: OnItemClickListener?): RecyclerView.ViewHolder(itemView) {
         var fullnameTextView: TextView? = null
@@ -22,6 +23,9 @@ class StudentsViewHolder(itemView: View, listener: OnItemClickListener?): Recycl
             checkbox?.apply {
                 setOnClickListener { view ->
                     (tag as Int)?.let { tag ->
+                        val studentId = idTextView?.text?.toString() ?: ""
+                        val isChecked = (view as? CheckBox)?.isChecked ?: false;
+                        Model.shared.updateStudentIsCheckedById(studentId, isChecked)
                         student?.isChecked = (view as? CheckBox)?.isChecked ?: false
                     }
                 }

@@ -19,7 +19,8 @@ interface OnItemClickListener {
 }
 
 class StudentsRecyclerViewActivity : AppCompatActivity() {
-    private var students: MutableList<Student>? = null
+    private var students: List<Student>? = null
+    private var adapter: StudentsRecyclerAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -30,15 +31,14 @@ class StudentsRecyclerViewActivity : AppCompatActivity() {
             insets
         }
 
-        students = Model.shared.students
         val recyclerView: RecyclerView = findViewById(R.id.students_recycler_view)
         recyclerView.setHasFixedSize(true)
 
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
 
-        val adapter = StudentsRecyclerAdapter(students)
-        adapter.listener = object : OnItemClickListener {
+        adapter = StudentsRecyclerAdapter(students)
+        adapter?.listener = object : OnItemClickListener {
             override fun onItemClick(student: Student?) {
                 val intent = Intent(applicationContext, StudentDetailsActivity::class.java)
                 intent.putExtra("student", student)
@@ -51,6 +51,16 @@ class StudentsRecyclerViewActivity : AppCompatActivity() {
         addStudentButton.setOnClickListener {
             val intent = Intent(this, AddStudentActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        Model.shared.getAllStudents {
+            this.students = it
+            adapter?.set(it)
+            adapter?.notifyDataSetChanged()
         }
     }
 }
