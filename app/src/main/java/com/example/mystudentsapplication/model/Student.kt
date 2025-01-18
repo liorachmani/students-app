@@ -1,18 +1,23 @@
 package com.example.mystudentsapplication.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 import android.os.Parcel
 import android.os.Parcelable
 
+
+@Entity
 data class Student(
     val fullname: String?,
-    val id: String?,
+    @PrimaryKey val id: String,
     val phone: String?,
     val address: String?,
     var isChecked: Boolean
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
-        parcel.readString(),
+        parcel.readString() ?: "",
         parcel.readString(),
         parcel.readString(),
         parcel.readByte() != 0.toByte()
