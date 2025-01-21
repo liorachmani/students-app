@@ -11,6 +11,7 @@ abstract class AppLocalDbRepository: RoomDatabase() {
     abstract fun studentDao(): StudentDao
 }
 
+// NOTE: keeping this unused code. was approved by tal zion on 20/2 zoom meeting
 object AppLocalDB {
     val db: AppLocalDbRepository by lazy {
         val context = MyApplication.Globals.context
