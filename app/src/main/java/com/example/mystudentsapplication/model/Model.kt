@@ -2,13 +2,11 @@ package com.example.mystudentsapplication.model
 
 import android.os.Looper
 import androidx.core.os.HandlerCompat
-import com.example.mystudentsapplication.model.dao.AppLocalDB
-import com.example.mystudentsapplication.model.dao.AppLocalDbRepository
 import java.util.concurrent.Executors
 
 class Model private constructor() {
 
-    private val database: AppLocalDbRepository = AppLocalDB.db
+    private val studentsList = mutableListOf<Student>()
     private val executor = Executors.newSingleThreadExecutor()
     private val mainHandler = HandlerCompat.createAsync(Looper.getMainLooper())
 
@@ -18,50 +16,41 @@ class Model private constructor() {
 
     fun getAllStudents(callback: (List<Student>) -> Unit) {
         executor.execute {
-            val students = database.studentDao().getAllStudents()
-            mainHandler.post {
-                callback(students)
-            }
+            val students = studentsList.toList()
+            mainHandler.post { callback(students) }
         }
     }
 
     fun addStudent(student: Student, callback: () -> Unit) {
         executor.execute {
-            database.studentDao().insertStudents(student)
-            mainHandler.post {
-                callback()
-            }
+            studentsList.add(student)
+            mainHandler.post { callback() }
         }
     }
 
     fun updateStudent(id: String, student: Student, callback: () -> Unit) {
         executor.execute {
-            database.studentDao().updateStudent(
-                oldId = id,
-                newId = student.id,
-                fullname = student.fullname,
-                phone = student.phone,
-                address = student.address,
-                isChecked = student.isChecked
-            )
-            mainHandler.post {
-                callback()
+            val index = studentsList.indexOfFirst { it.id == id }
+            if (index != -1) {
+                studentsList[index] = student
             }
+            mainHandler.post { callback() }
         }
     }
 
     fun deleteStudent(student: Student, callback: () -> Unit) {
         executor.execute {
-            database.studentDao().delete(student)
-            mainHandler.post {
-                callback()
-            }
+            studentsList.remove(student)
+            mainHandler.post { callback() }
         }
     }
 
     fun updateStudentIsCheckedById(id: String, isChecked: Boolean) {
         executor.execute {
-            database.studentDao().updateIsCheckedById(id, isChecked)
+            val student = studentsList.find { it.id == id }
+            if (student != null) {
+                student.isChecked = isChecked
+            }
         }
     }
 }

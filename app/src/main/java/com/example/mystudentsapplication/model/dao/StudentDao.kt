@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.mystudentsapplication.model.Student
 
+// NOTE: keeping this unused code. was approved by tal zion on 20/2 zoom meeting
 @Dao
 interface StudentDao {
     @Query("SELECT * FROM Student")
